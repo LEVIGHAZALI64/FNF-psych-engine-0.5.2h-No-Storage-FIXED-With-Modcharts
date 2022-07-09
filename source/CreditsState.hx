@@ -82,7 +82,7 @@ class CreditsState extends MusicBeatState
 
 		var pisspoop:Array<Array<String>> = [ //Name - Icon name - Description - Link - BG Color
 			['PE 0.5.2H Android No Storage'],
-			['LG64',	'levi',				'Port Modcharts To PE 0.5.2H Android No Storage',					'https://youtube.com/c/LG64TUBE', 	'F73838'],
+			['LG64',	'levi',				'Port Modcharts And Make Optimized Version',					'https://youtube.com/c/LG64TUBE', 	'F73838'],
             ['a random.',	'none',				'Make No Storage Version',					'https://youtube.com/channel/UC9ZKGvBODHIj0YL1xgtbLcA', 	'F73838'],   
             ['Edd34r',	'none',				'Fixed Workflows And Fixed .yml',					'https://youtube.com/c/Edd34rUWU', 	'F73838'],   
             ['Psych Engine Android'],
