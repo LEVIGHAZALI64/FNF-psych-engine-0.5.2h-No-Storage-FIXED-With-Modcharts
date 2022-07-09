@@ -1,0 +1,48 @@
+{
+	"songs": [
+		[
+			"template1",
+			"dad",
+			[
+				146,
+				113,
+				253
+			]
+		],
+		[
+			"template2",
+			"dad",
+			[
+				146,
+				113,
+				253
+			]
+		],
+		[
+			"template3",
+			"dad",
+			[
+				146,
+				113,
+				253
+			]
+		]
+	],
+	"hideFreeplay": false,
+	"weekBackground": "custom",
+	"weekCharacters": [
+		"dad",
+		"bf",
+		"gf"
+	],
+	"storyName": "Custom week psych by hayato",
+	"weekName": "Custom Week",
+	"freeplayColor": [
+		146,
+		113,
+		253
+	],
+	"hideStoryMode": false,
+	"weekBefore": "week6",
+	"startUnlocked": true
+}
