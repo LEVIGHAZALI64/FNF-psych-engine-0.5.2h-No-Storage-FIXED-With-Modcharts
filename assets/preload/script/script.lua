@@ -1,32 +1,34 @@
-local defaultNotePos = {};
-local shake = 4;
- 
-function onSongStart()
-    for i = 0,7 do 
-        x = getPropertyFromGroup('strumLineNotes', i, 'x')
- 
-        y = getPropertyFromGroup('strumLineNotes', i, 'y')
- 
-        table.insert(defaultNotePos, {x,y})
-    end
+local allowCountdown = false
+
+function onStartCountdown()
+	if not allowCountdown then
+		runTimer('startText', 0.1);
+		allowCountdown = true;
+		startCountdown();
+		return Function_Stop;
+	end
+	return Function_Continue;
 end
 
-function onUpdate(elapsed)
- 
-    songPos = getPropertyFromClass('Conductor', 'songPosition');
- 
-    currentBeat = (songPos / 300) * (bpm / 160)
-
-    if curStep >= 0 and curStep < 80 then
-        for i = 0,7 do
-            setPropertyFromGroup('strumLineNotes', i, 'x', defaultNotePos[i + 1][1] + getRandomInt(-shake, shake) + math.sin((currentBeat + i*0.25) * math.pi))
-            setPropertyFromGroup('strumLineNotes', i, 'y', defaultNotePos[i + 1][2] + getRandomInt(-shake, shake) + math.sin((currentBeat + i*0.25) * math.pi))
-        end                                                        
-end                                                           
-    if curStep == 80 then
-        for i = 0,7 do 
-            setPropertyFromGroup('strumLineNotes', i, 'x', defaultNotePos[i + 1][1])
-            setPropertyFromGroup('strumLineNotes', i, 'y', defaultNotePos[i + 1][2])
-        end
-    end
+function onTimerCompleted(tag, loops, loopsLeft)
+	if tag == 'startText' then
+		makeLuaSprite('blackscreen', 'blackscreen', 0, 0);
+		setObjectCamera('blackscreen', 'hud');
+		addLuaSprite('blackscreen', true);
+		makeLuaSprite('circle', 'CircleSongName', 777, 0);
+		setObjectCamera('circle', 'hud');
+		addLuaSprite('circle', true);
+		makeLuaSprite('text', 'TextSongName', -1100, 0);
+		setObjectCamera('text', 'hud');
+		addLuaSprite('text', true);
+		runTimer('appear', 0.6, 1);
+		runTimer('fadeout', 1.9, 1);
+	elseif tag == 'appear' then
+		doTweenX('circletween', 'circle', 0, 0.5, 'linear');
+		doTweenX('texttween', 'text', 0, 0.5, 'linear');
+	elseif tag == 'fadeout' then
+		doTweenAlpha('circlefade', 'circle', 0, 1, 'linear');
+		doTweenAlpha('textfade', 'text', 0, 1, 'linear');
+		doTweenAlpha('blackfade', 'blackscreen', 0, 1, 'linear');
+	end
 end
