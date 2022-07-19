@@ -36,6 +36,7 @@ class StoryMenuState extends MusicBeatState
 	private static var curWeek:Int = 0;
 
 	var txtTracklist:FlxText;
+	var curSelection:Int = 0;
 
 	var grpWeekText:FlxTypedGroup<MenuItem>;
 	var grpWeekCharacters:FlxTypedGroup<MenuCharacter>;
@@ -46,6 +47,8 @@ class StoryMenuState extends MusicBeatState
 	var sprDifficulty:FlxSprite;
 	var leftArrow:FlxSprite;
 	var rightArrow:FlxSprite;
+	var leftArrow2:FlxSprite;
+	var rightArrow2:FlxSprite;
 
 	var loadedWeeks:Array<WeekData> = [];
 
@@ -103,8 +106,8 @@ class StoryMenuState extends MusicBeatState
 				loadedWeeks.push(weekFile);
 				WeekData.setDirectoryFromWeek(weekFile);
 				var weekThing:MenuItem = new MenuItem(0, bgSprite.y + 396, WeekData.weeksList[i]);
-				weekThing.y += ((weekThing.height + 20) * num);
-				weekThing.targetY = num;
+				//weekThing.y += ((weekThing.height + 20) * num);
+				//weekThing.targetY = num;
 				grpWeekText.add(weekThing);
 
 				weekThing.screenCenter(X);
@@ -138,7 +141,7 @@ class StoryMenuState extends MusicBeatState
 		difficultySelectors = new FlxGroup();
 		add(difficultySelectors);
 
-		leftArrow = new FlxSprite(grpWeekText.members[0].x + grpWeekText.members[0].width + 10, grpWeekText.members[0].y + 10);
+		leftArrow = new FlxSprite(440, 600);
 		leftArrow.frames = ui_tex;
 		leftArrow.animation.addByPrefix('idle', "arrow left");
 		leftArrow.animation.addByPrefix('press', "arrow push left");
@@ -146,13 +149,21 @@ class StoryMenuState extends MusicBeatState
 		leftArrow.antialiasing = ClientPrefs.globalAntialiasing;
 		difficultySelectors.add(leftArrow);
 
+		leftArrow2 = new FlxSprite(400, 500);
+		leftArrow2.frames = ui_tex;
+		leftArrow2.animation.addByPrefix('idle', "arrow left");
+		leftArrow2.animation.addByPrefix('press', "arrow push left");
+		leftArrow2.animation.play('idle');
+		leftArrow2.antialiasing = ClientPrefs.globalAntialiasing;
+		add(leftArrow2);
+
 		CoolUtil.difficulties = CoolUtil.defaultDifficulties.copy();
 		if(lastDifficultyName == '')
 		{
 			lastDifficultyName = CoolUtil.defaultDifficulty;
 		}
 		curDifficulty = Math.round(Math.max(0, CoolUtil.defaultDifficulties.indexOf(lastDifficultyName)));
-		
+		  
 		sprDifficulty = new FlxSprite(0, leftArrow.y);
 		sprDifficulty.antialiasing = ClientPrefs.globalAntialiasing;
 		difficultySelectors.add(sprDifficulty);
@@ -164,6 +175,14 @@ class StoryMenuState extends MusicBeatState
 		rightArrow.animation.play('idle');
 		rightArrow.antialiasing = ClientPrefs.globalAntialiasing;
 		difficultySelectors.add(rightArrow);
+
+		rightArrow2 = new FlxSprite(leftArrow2.x + 436, leftArrow2.y);
+		rightArrow2.frames = ui_tex;
+		rightArrow2.animation.addByPrefix('idle', 'arrow right');
+		rightArrow2.animation.addByPrefix('press', "arrow push right", 24, false);
+		rightArrow2.animation.play('idle');
+		rightArrow2.antialiasing = ClientPrefs.globalAntialiasing;
+		add(rightArrow2);
 
 		add(bgYellow);
 		add(bgSprite);
@@ -184,13 +203,10 @@ class StoryMenuState extends MusicBeatState
 
 		changeWeek();
 		changeDifficulty();
-
-		#if android
-		addVirtualPad(FULL, A_B_X_Y);
-		addPadCamera();
-		#end
+		changeSelected();
 
 		super.create();
+		sprDifficulty.alpha = 0.3;
 	}
 
 	override function closeSubState() {
@@ -211,20 +227,34 @@ class StoryMenuState extends MusicBeatState
 
 		if (!movedBack && !selectedWeek)
 		{
-			var upP = controls.UI_UP_P;
-			var downP = controls.UI_DOWN_P;
-			if (upP)
+			if (controls.UI_UP_P)
+			changeSelected(-1);
+			if (controls.UI_DOWN_P)
+			changeSelected(1);
+			if (curSelection == 0){
+			if (controls.UI_LEFT_P)
 			{
 				changeWeek(-1);
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 			}
+			else
+			leftArrow2.animation.play('idle');
 
-			if (downP)
+			if (controls.UI_RIGHT_P)
 			{
 				changeWeek(1);
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 			}
-
+			if (controls.UI_LEFT)
+			leftArrow2.animation.play('press');
+			else
+			leftArrow2.animation.play('idle');
+			if (controls.UI_RIGHT)
+			rightArrow2.animation.play('press');	
+			else
+			rightArrow2.animation.play('idle');
+		}
+		else if (curSelection == 1){
 			if (controls.UI_RIGHT)
 				rightArrow.animation.play('press')
 			else
@@ -239,22 +269,14 @@ class StoryMenuState extends MusicBeatState
 				changeDifficulty(1);
 			else if (controls.UI_LEFT_P)
 				changeDifficulty(-1);
-			else if (upP || downP)
-				changeDifficulty();
-
-			if(FlxG.keys.justPressed.CONTROL #if android || _virtualpad.buttonX.justPressed #end)
+		}
+			if(FlxG.keys.justPressed.CONTROL)
 			{
-				#if android
-				removeVirtualPad();
-				#end
 				persistentUpdate = false;
 				openSubState(new GameplayChangersSubstate());
 			}
-			else if(controls.RESET #if android || _virtualpad.buttonY.justPressed #end)
+			else if(controls.RESET)
 			{
-				#if android
-				removeVirtualPad();
-				#end
 				persistentUpdate = false;
 				openSubState(new ResetScoreSubState('', curDifficulty, '', curWeek));
 				//FlxG.sound.play(Paths.sound('scrollMenu'));
@@ -273,6 +295,24 @@ class StoryMenuState extends MusicBeatState
 		}
 
 		super.update(elapsed);
+		for (item in grpWeekText.members){
+			if (curSelection == 1){
+			if (item.targetY == Std.int(0))
+				item.alpha = 0.3;
+			else
+				item.alpha = 0;
+		}
+		else if (curSelection == 0){
+			for (i in grpWeekText.members){
+				if (item.targetY == Std.int(0))
+					item.alpha = 1;
+				else
+				item.alpha = 0;
+			}
+		}
+		}
+		if (curSelection == 0)
+			sprDifficulty.alpha = 0.3;
 
 		grpLocks.forEach(function(lock:FlxSprite)
 		{
@@ -370,6 +410,26 @@ class StoryMenuState extends MusicBeatState
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
 
+	function changeSelected(change:Int = 0):Void{
+	curSelection += change;
+
+	if (curSelection > 1)
+		curSelection = 0;
+	if (curSelection < 0)
+		curSelection = 1;
+
+	if (curSelection == 0){
+	sprDifficulty.alpha = 0.3;
+	leftArrow.alpha = 0.3;
+	rightArrow.alpha = 0.3;
+	}
+	if (curSelection == 1){
+	sprDifficulty.alpha = 1;
+	leftArrow.alpha = 1;
+	rightArrow.alpha = 1;
+	}
+	}
+
 	function changeWeek(change:Int = 0):Void
 	{
 		curWeek += change;
@@ -395,7 +455,7 @@ class StoryMenuState extends MusicBeatState
 			if (item.targetY == Std.int(0) && unlocked)
 				item.alpha = 1;
 			else
-				item.alpha = 0.6;
+				item.alpha = 0;
 			bullShit++;
 		}
 
