@@ -1,71 +1,37 @@
-local xx = 420.95;
-local yy = 513;
-local xx2 = 952.9;
-local yy2 = 550;
-local ofs = 60;
-local followchars = true;
-local del = 0;
-local del2 = 0;
-
-function onUpdate()
-    if followchars == true then
-        if mustHitSection == false then
-            setProperty('defaultCamZoom',0.8)
-            if getProperty('dad.animation.curAnim.name') == 'singLEFT' then
-                triggerEvent('Camera Follow Pos',xx-ofs,yy)
-            end
-            if getProperty('dad.animation.curAnim.name') == 'singRIGHT' then
-                triggerEvent('Camera Follow Pos',xx+ofs,yy)
-            end
-            if getProperty('dad.animation.curAnim.name') == 'singUP' then
-                triggerEvent('Camera Follow Pos',xx,yy-ofs)
-            end
-            if getProperty('dad.animation.curAnim.name') == 'singDOWN' then
-                triggerEvent('Camera Follow Pos',xx,yy+ofs)
-            end
-            if getProperty('dad.animation.curAnim.name') == 'singLEFT-alt' then
-                triggerEvent('Camera Follow Pos',xx-ofs,yy)
-            end
-            if getProperty('dad.animation.curAnim.name') == 'singRIGHT-alt' then
-                triggerEvent('Camera Follow Pos',xx+ofs,yy)
-            end
-            if getProperty('dad.animation.curAnim.name') == 'singUP-alt' then
-                triggerEvent('Camera Follow Pos',xx,yy-ofs)
-            end
-            if getProperty('dad.animation.curAnim.name') == 'singDOWN-alt' then
-                triggerEvent('Camera Follow Pos',xx,yy+ofs)
-            end
-            if getProperty('dad.animation.curAnim.name') == 'idle-alt' then
-                triggerEvent('Camera Follow Pos',xx,yy)
-            end
-            if getProperty('dad.animation.curAnim.name') == 'idle' then
-                triggerEvent('Camera Follow Pos',xx,yy)
-            end
-            if getProperty('dad.animation.curAnim.name') == 'hey' then
-                triggerEvent('Camera Follow Pos',xx - 130,yy)
-            end
-        else
-            setProperty('defaultCamZoom',1.0)
-            if getProperty('boyfriend.animation.curAnim.name') == 'singLEFT' then
-                triggerEvent('Camera Follow Pos',xx2-ofs,yy2)
-            end
-            if getProperty('boyfriend.animation.curAnim.name') == 'singRIGHT' then
-                triggerEvent('Camera Follow Pos',xx2+ofs,yy2)
-            end
-            if getProperty('boyfriend.animation.curAnim.name') == 'singUP' then
-                triggerEvent('Camera Follow Pos',xx2,yy2-ofs)
-            end
-            if getProperty('boyfriend.animation.curAnim.name') == 'singDOWN' then
-                triggerEvent('Camera Follow Pos',xx2,yy2+ofs)
-            end
-            if getProperty('boyfriend.animation.curAnim.name') == 'idle-alt' then
-                triggerEvent('Camera Follow Pos',xx2,yy2)
-            end
-            if getProperty('boyfriend.animation.curAnim.name') == 'idle' then
-                triggerEvent('Camera Follow Pos',xx2,yy2)
-            end
-        end
-    else
-        triggerEvent('Camera Follow Pos','','')
-    end
+local turn = 10
+local turn2 = 20
+local y = 0;
+local x = 0;
+local canBob = true
+local Strums = 'opponentStrums'
+function onCreate()
+    math.randomseed(os.clock() * 1000);
+    
+    --doTweenAlpha("gone","camHUD",0,0.01)
 end
+function onBeatHit()
+    if curBeat == 1 then 
+        y = defaultOpponentStrumY1;
+        noteTweenAlpha("vanish0",0,0.5,crochet*0.004,"sineInOut")
+        noteTweenAlpha("vanish1",1,0.5,crochet*0.0045,"sineInOut")
+        noteTweenAlpha("vanish2",2,0.5,crochet*0.005,"sineInOut")
+        noteTweenAlpha("vanish3",3,0.5,crochet*0.0055,"sineInOut")
+    end
+    if curBeat == 240 then
+    turn = turn * 4
+    end
+    if curBeat % 2 == 0 and canBob then 
+        turn2 = turn2 * -1
+        for i = 0,7 do
+            local uhhh = curBeat % 8 * (i + i)
+            local swag = i % 4 * 2.5 - uhhh
+            if i > 3 then
+                x =  getPropertyFromGroup('opponentStrums', i-4, 'x');
+            else
+                x =  getPropertyFromGroup('playerStrums', i, 'x');
+            end
+            --noteTweenY("wheeeup"..i,i,y + turn,crochet*0.002,"sineInOut")
+            noteTweenX("wheeeleft"..i,i,x + turn2,crochet*0.002,"sineInOut")
+        end
+    end
+end 
