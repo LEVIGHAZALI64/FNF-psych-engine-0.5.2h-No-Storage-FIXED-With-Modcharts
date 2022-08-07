@@ -101,12 +101,12 @@
 		}
 	],
 	"no_antialiasing": false,
-	"image": "characters/template6",
+	"image": "characters/template4",
 	"position": [
 		0,
 		300
 	],
-	"healthicon": "template6",
+	"healthicon": "template4",
 	"flip_x": true,
 	"healthbar_colors": [
 		183,

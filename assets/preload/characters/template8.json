@@ -101,17 +101,17 @@
 		}
 	],
 	"no_antialiasing": false,
-	"image": "characters/template6",
+	"image": "characters/template8",
 	"position": [
 		0,
 		300
 	],
-	"healthicon": "template6",
+	"healthicon": "template8",
 	"flip_x": true,
 	"healthbar_colors": [
-		183,
-		216,
-		85
+		0,
+		0,
+		285
 	],
 	"camera_position": [
 		0,
